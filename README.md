@@ -1,20 +1,68 @@
 # :beer: Desafio (Back-end)
 
-Nossos devs gostam muito de cerveja, e por isso queremos criar nossa própria cervejeira :smirk: :beer: .
 
-O desafio é servir a cerveja sempre gelada! Você sabia que existem vários estilos de cerveja (IPA, Weizenbier, Pilsens, etc)?
+## Tecnologias utilizadas?
 
-Sabia que cada estilo tem uma temperatura ideal de consumo? Isso mesmo, em uma temperatura ideal sua breja fica mais saborosa :hushed: !
+* Sprint Boot (micro-serviço em Java);
+* H2 Database (banco simples em memória);
+* JPA (Biblioteca de persistência de objetos relacionais);
+* Lombok (biblioteca para simplificar codificação Java - get/set/construtores)
+* Feign Client (biblioteca para consumo de WebServices);
+* JUnit (framework para testes);
 
 
-| Estilo            | Temperatura Ideal para consumo    |
-| -------------     | -------------                     |
-| Weissbier	        |  -1° a 3°                         |
-| Pilsens	        |  -2° a 4°                         |
-| Weizenbier	    |  -4° a 6°                         |
-| Red ale	        |  -5° a 5°                         |
-| India pale ale	|  -6° a 7°                         |
-| IPA	            |  -7° a 10°                        |
-| Dunkel	        |  -8° a 2°                         |
-| Imperial Stouts	| -10° a 13°                        |
-| Brown ale         |   0° a 14°                        |
+## Endpoint público
+
+O projeto foi publicado no Heroku.
+
+`https://breja-api.herokuapp.com`
+
+## API
+
+
+**GET** `https://breja-api.herokuapp.com/cerveja`
+
+**GET** `https://breja-api.herokuapp.com/cerveja/{ID}`
+
+**POST** `https://breja-api.herokuapp.com/cerveja` 
+
+```
+{
+    "nome": "Cerveja",
+    "tempInicial": 1,
+    "tempFinal": 6
+}
+```
+
+**PUT** `https://breja-api.herokuapp.com/cerveja/{ID}`
+
+```
+{
+    "id": 1,
+    "nome": "Weissbier",
+    "tempInicial": -1,
+    "tempFinal": 3
+}
+```
+
+**DELETE** `https://breja-api.herokuapp.com/cerveja/{ID}`
+
+**PUT** `https://breja-api.herokuapp.com/cerveja/playlist`
+
+```
+{
+	"temperatura": "1"
+}
+```
+
+## Instalação
+
+@TODO 
+
+## Executar testes
+
+@TODO
+
+## Build do projeto e publicação
+
+@TODO
