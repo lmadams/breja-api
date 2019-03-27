@@ -1,5 +1,6 @@
 package br.com.adams.brejaapi.controller;
 
+import br.com.adams.brejaapi.dto.CervejaDto;
 import br.com.adams.brejaapi.dto.EstiloTemperaturaDto;
 import br.com.adams.brejaapi.model.Cerveja;
 import br.com.adams.brejaapi.service.CervejaService;
@@ -54,7 +55,7 @@ public class CervejaController {
   }
 
   @PutMapping(value = "/playlist")
-  public List<Cerveja> getPlaylist(@Valid @RequestBody final EstiloTemperaturaDto temperaturaDto) {
+  public List<CervejaDto> getPlaylist(@Valid @RequestBody final EstiloTemperaturaDto temperaturaDto) {
     return service.buscarPlaylist(temperaturaDto);
   }
 }

@@ -4,6 +4,7 @@
 ## Tecnologias utilizadas?
 
 * Sprint Boot (micro-serviço em Java);
+* Maven (Gestão de dependências e build)
 * H2 Database (banco simples em memória);
 * JPA (Biblioteca de persistência de objetos relacionais);
 * Lombok (biblioteca para simplificar codificação Java - get/set/construtores)

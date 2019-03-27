@@ -1,14 +1,24 @@
 package br.com.adams.brejaapi.service.impl;
 
+import br.com.adams.brejaapi.dto.CervejaDto;
 import br.com.adams.brejaapi.dto.EstiloTemperaturaDto;
+import br.com.adams.brejaapi.dto.TrackDto;
 import br.com.adams.brejaapi.model.Cerveja;
 import br.com.adams.brejaapi.repository.CervejaRepository;
-import br.com.adams.brejaapi.rest.SpotifyAccountClient;
 import br.com.adams.brejaapi.service.CervejaService;
+import com.neovisionaries.i18n.CountryCode;
+import com.wrapper.spotify.SpotifyApi;
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
+import com.wrapper.spotify.model_objects.specification.Paging;
+import com.wrapper.spotify.model_objects.specification.Track;
+import com.wrapper.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -17,9 +27,14 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CervejaServiceImpl implements CervejaService {
+  private static final String CLIENT_ID = "013c2d83b0764d8d986d8228ea0a4432";
+  private static final String CLIENT_SECRET = "d9b15670fa8e40159af404af47ce1841";
+  private static final SpotifyApi spotifyApi =
+      new SpotifyApi.Builder().setClientId(CLIENT_ID).setClientSecret(CLIENT_SECRET).build();
+  private static final ClientCredentialsRequest clientCredentialsRequest =
+      spotifyApi.clientCredentials().build();
 
   private final CervejaRepository repository;
-  private final SpotifyAccountClient accountClient;
 
   @Override
   public List<Cerveja> listar() {
@@ -57,19 +72,54 @@ public class CervejaServiceImpl implements CervejaService {
   }
 
   @Override
-  public List<Cerveja> buscarPlaylist(EstiloTemperaturaDto temperaturaDto) {
-    return getCervejasPorTemp(listar(), temperaturaDto.getTemperatura());
+  public List<CervejaDto> buscarPlaylist(EstiloTemperaturaDto temperaturaDto) {
+    final List<Cerveja> cervejas = getCervejasPorTemp(listar(), temperaturaDto.getTemperatura());
+    List<CervejaDto> cervejaComPlayList = new ArrayList<>();
+    try {
+      spotifyApi.setAccessToken(clientCredentialsRequest.execute().getAccessToken());
+      cervejaComPlayList =
+          cervejas.stream()
+              .map(
+                  cerveja -> {
+                    Paging<Track> spotifyExecute;
+                    List<TrackDto> tracks = new ArrayList<>();
+                    try {
+                      spotifyExecute =
+                          spotifyApi
+                              .searchTracks(cerveja.getNome())
+                              .market(CountryCode.BR)
+                              .limit(10)
+                              .offset(0)
+                              .build()
+                              .execute();
 
-    //    HashMap<String, String> params = new HashMap<>();
-    //    params.put("grant_type", "client_credentials");
-    //
-    //    accountClient.getToken(params);
-    //
-    //    System.out.println(credentials);
+                      tracks =
+                          Arrays.stream(spotifyExecute.getItems())
+                              .map(
+                                  track ->
+                                      TrackDto.builder()
+                                          .nome(track.getName())
+                                          .artista(track.getArtists()[0].getName())
+                                          .link(track.getHref())
+                                          .build())
+                              .collect(Collectors.toList());
+                    } catch (IOException | SpotifyWebApiException e) {
+                      System.out.println("Error: " + e.getMessage());
+                    }
 
-    //    cervejas.stream().map(cerveja -> spotifyClient.buscaPlaylist(cerveja.getNome()));
-
-    //    return cervejas;
+                    return CervejaDto.builder()
+                        .id(cerveja.getId())
+                        .nome(cerveja.getNome())
+                        .tempFinal(cerveja.getTempFinal())
+                        .tempInicial(cerveja.getTempInicial())
+                        .tracks(tracks)
+                        .build();
+                  })
+              .collect(Collectors.toList());
+    } catch (IOException | SpotifyWebApiException e) {
+      System.out.println("Error: " + e.getMessage());
+    }
+    return cervejaComPlayList;
   }
 
   private List<Cerveja> getCervejasPorTemp(final List<Cerveja> lista, final double temperatura) {
