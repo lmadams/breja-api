@@ -1,5 +1,6 @@
 package br.com.adams.brejaapi.service;
 
+import br.com.adams.brejaapi.dto.EstiloTemperaturaDto;
 import br.com.adams.brejaapi.model.Cerveja;
 
 import java.util.List;
@@ -14,4 +15,6 @@ public interface CervejaService {
   Cerveja editar(Long id, Cerveja cerveja);
 
   void excluir(Long id);
+
+  List<Cerveja> buscarPlaylist(EstiloTemperaturaDto temperaturaDto);
 }

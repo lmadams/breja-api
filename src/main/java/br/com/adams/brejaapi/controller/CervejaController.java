@@ -1,6 +1,9 @@
 package br.com.adams.brejaapi.controller;
 
+import br.com.adams.brejaapi.dto.EstiloTemperaturaDto;
 import br.com.adams.brejaapi.model.Cerveja;
+import br.com.adams.brejaapi.model.Endereco;
+import br.com.adams.brejaapi.rest.CepClient;
 import br.com.adams.brejaapi.service.CervejaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,6 +27,7 @@ import java.util.List;
 public class CervejaController {
 
   private final CervejaService service;
+  private final CepClient cepClient;
 
   @GetMapping
   public List<Cerveja> listar() {
@@ -50,5 +54,16 @@ public class CervejaController {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void excluir(@PathVariable final Long id) {
     service.excluir(id);
+  }
+
+  @PutMapping(value = "/playlist")
+  public List<Cerveja> getPlaylist(@Valid @RequestBody final EstiloTemperaturaDto temperaturaDto) {
+    return service.buscarPlaylist(temperaturaDto);
+  }
+
+  //   @TODO REMOVER
+  @GetMapping(value = "/cep-search/{cep}")
+  public Endereco getCep(@PathVariable final String cep) {
+    return cepClient.buscaEnderecoPor(cep);
   }
 }

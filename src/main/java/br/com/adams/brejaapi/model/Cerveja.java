@@ -10,7 +10,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.PostLoad;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
 
 @Data
@@ -35,4 +37,11 @@ public class Cerveja implements Serializable {
 
   @Column(name = "temp_final")
   private Long tempFinal;
+
+  @Transient private double tempMedia;
+
+  @PostLoad
+  private void onLoad() {
+    this.tempMedia = (double) (tempInicial + tempFinal) / 2;
+  }
 }
