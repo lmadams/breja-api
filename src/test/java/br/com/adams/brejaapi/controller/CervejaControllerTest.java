@@ -1,6 +1,7 @@
 package br.com.adams.brejaapi.controller;
 
 import br.com.adams.brejaapi.BrejaApiApplication;
+import br.com.adams.brejaapi.dto.EstiloTemperaturaDto;
 import br.com.adams.brejaapi.model.Cerveja;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
@@ -14,6 +15,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -93,6 +95,18 @@ public class CervejaControllerTest {
   @Test
   public void excluir() throws Exception {
     mockMvc.perform(delete("/cerveja/9")).andExpect(status().isNoContent());
+  }
+
+  @Test
+  public void playlistComListaDeValoresExatos() throws Exception {
+    final EstiloTemperaturaDto temp = EstiloTemperaturaDto.builder().temperatura(1).build();
+    mockMvc
+        .perform(
+            put("/cerveja/playlist")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(temp)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(3)));
   }
 
   public static String asJsonString(final Object obj) {

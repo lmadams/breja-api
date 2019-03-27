@@ -3,6 +3,7 @@ package br.com.adams.brejaapi.service.impl;
 import br.com.adams.brejaapi.dto.EstiloTemperaturaDto;
 import br.com.adams.brejaapi.model.Cerveja;
 import br.com.adams.brejaapi.repository.CervejaRepository;
+import br.com.adams.brejaapi.rest.SpotifyAccountClient;
 import br.com.adams.brejaapi.service.CervejaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
 public class CervejaServiceImpl implements CervejaService {
 
   private final CervejaRepository repository;
+  private final SpotifyAccountClient accountClient;
 
   @Override
   public List<Cerveja> listar() {
@@ -55,31 +58,57 @@ public class CervejaServiceImpl implements CervejaService {
 
   @Override
   public List<Cerveja> buscarPlaylist(EstiloTemperaturaDto temperaturaDto) {
-    final List<Cerveja> cervejas = getCervejasPorTemp(listar(), temperaturaDto.getTemperatura());
+    return getCervejasPorTemp(listar(), temperaturaDto.getTemperatura());
 
-//    cervejas.stream().map(cerveja -> )
-    return cervejas;
+    //    HashMap<String, String> params = new HashMap<>();
+    //    params.put("grant_type", "client_credentials");
+    //
+    //    accountClient.getToken(params);
+    //
+    //    System.out.println(credentials);
+
+    //    cervejas.stream().map(cerveja -> spotifyClient.buscaPlaylist(cerveja.getNome()));
+
+    //    return cervejas;
   }
 
   private List<Cerveja> getCervejasPorTemp(final List<Cerveja> lista, final double temperatura) {
-    final List<Cerveja> cervejas =
+    final List<Cerveja> cervejasOrdenadas =
         lista.stream()
             .sorted((Comparator.comparingDouble(Cerveja::getTempMedia)))
             .collect(Collectors.toList());
 
-    return cervejas.stream()
-        .filter(cerveja -> cerveja.getTempMedia() == temperatura)
-        .sorted((Comparator.comparing(Cerveja::getNome)))
-        .collect(Collectors.toList());
+    List<Cerveja> cervejas =
+        cervejasOrdenadas.stream()
+            .filter(cerveja -> cerveja.getTempMedia() == temperatura)
+            .sorted((Comparator.comparing(Cerveja::getNome)))
+            .collect(Collectors.toList());
 
-    // @TODO arrumar temperatura proxima
-    //    if (cervejas.isEmpty()) {
-    //      List<Double> collect =
-    //          cervejasOrdenadasPorMedia.stream()
-    //              .map(cerveja -> temperaturaDto.getTemperatura() - cerveja.getTempMedia())
-    //              .sorted(Double::compareTo)
-    //              .collect(Collectors.toList());
-    //      System.out.println(collect);
-    //    }
+    if (cervejas.isEmpty()) {
+      Optional<Double> menorDiferenca =
+          cervejasOrdenadas.stream()
+              .map(cerveja -> temperatura - cerveja.getTempMedia())
+              .map(
+                  aDouble -> {
+                    if (aDouble < 0) {
+                      return aDouble * -1;
+                    }
+                    return aDouble;
+                  })
+              .min(Double::compareTo);
+
+      return cervejasOrdenadas.stream()
+          .filter(
+              cerveja -> {
+                if (cerveja.getTempMedia() == temperatura + menorDiferenca.get()) {
+                  return true;
+                }
+                return cerveja.getTempMedia() == temperatura - menorDiferenca.get();
+              })
+          .sorted((Comparator.comparing(Cerveja::getNome)))
+          .collect(Collectors.toList());
+    }
+
+    return cervejas;
   }
 }
