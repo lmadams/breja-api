@@ -55,7 +55,8 @@ public class CervejaController {
   }
 
   @PutMapping(value = "/playlist")
-  public List<CervejaDto> getPlaylist(@Valid @RequestBody final EstiloTemperaturaDto temperaturaDto) {
+  public List<CervejaDto> getPlaylist(
+      @Valid @RequestBody final EstiloTemperaturaDto temperaturaDto) {
     return service.buscarPlaylist(temperaturaDto);
   }
 }

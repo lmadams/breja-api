@@ -100,7 +100,7 @@ public class CervejaServiceImpl implements CervejaService {
                                       TrackDto.builder()
                                           .nome(track.getName())
                                           .artista(track.getArtists()[0].getName())
-                                          .link(track.getHref())
+                                          .link(track.getPreviewUrl())
                                           .build())
                               .collect(Collectors.toList());
                     } catch (IOException | SpotifyWebApiException e) {
