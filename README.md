@@ -8,7 +8,7 @@
 * H2 Database (banco simples em memória);
 * JPA (Biblioteca de persistência de objetos relacionais);
 * Lombok (biblioteca para simplificar codificação Java - get/set/construtores)
-* Feign Client (biblioteca para consumo de WebServices);
+* Spotify Web Api (biblioteca para consumo dos serviços do Spotify - https://github.com/thelinmichael/spotify-web-api-java);
 * JUnit (framework para testes);
 
 
@@ -20,10 +20,15 @@ O projeto foi publicado no Heroku.
 
 ## API
 
+Listar todas cervejas cadastradas
 
 **GET** `https://breja-api.herokuapp.com/cerveja`
 
+Recuperar uma cerveja por ID
+
 **GET** `https://breja-api.herokuapp.com/cerveja/{ID}`
+
+Salvar uma nova cerveja
 
 **POST** `https://breja-api.herokuapp.com/cerveja` 
 
@@ -34,6 +39,8 @@ O projeto foi publicado no Heroku.
     "tempFinal": 6
 }
 ```
+
+Editar uma cerveja com base no ID
 
 **PUT** `https://breja-api.herokuapp.com/cerveja/{ID}`
 
@@ -46,7 +53,11 @@ O projeto foi publicado no Heroku.
 }
 ```
 
+Remover uma cerveja com base no ID
+
 **DELETE** `https://breja-api.herokuapp.com/cerveja/{ID}`
+
+Lista as cervejas com base na temperatura informada juntamente com sugestões do Spotify.
 
 **PUT** `https://breja-api.herokuapp.com/cerveja/playlist`
 
@@ -58,12 +69,24 @@ O projeto foi publicado no Heroku.
 
 ## Instalação
 
-@TODO 
+Para instalação das dependências do projeto execute (ignora os testes):
+
+`
+mvn clean install -DskipTests 
+`
+
+## Executar o projeto
+
+Para subir o micro serviço:
+
+`
+mvn spring-boot:run
+`
 
 ## Executar testes
 
-@TODO
+Para executar os testes (classe de teste para a controller - ponto de entrada das request's):
 
-## Build do projeto e publicação
-
-@TODO
+`
+mvn test
+`
